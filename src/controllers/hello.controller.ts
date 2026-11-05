@@ -8,3 +8,4 @@ export function getHello(req: Request, res: Response) {
     message: `Halo, ${nama}!`,
   });
 }
+

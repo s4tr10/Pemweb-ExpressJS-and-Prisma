@@ -79,3 +79,64 @@ export async function createProduct(req: Request, res: Response) {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
 }
+
+export async function updateProduct(req: Request, res: Response) {
+  try {
+    const rawId = req.body?.id ?? req.params.id;
+    const id = Number(rawId);
+
+    if (rawId === undefined || rawId === null || rawId === '' || Number.isNaN(id) || !Number.isInteger(id) || id <= 0) {
+      res.status(400).json({
+        message: 'Field id wajib diisi berupa angka bulat positif',
+      });
+      return;
+    }
+
+    const { name, price } = req.body ?? {};
+
+    if (typeof name !== 'string' || name.trim() === '') {
+      res.status(400).json({
+        message: 'Field name wajib diisi berupa string',
+      });
+      return;
+    }
+
+    const parsedPrice = Number(price);
+    if (
+      price === undefined ||
+      price === null ||
+      price === '' ||
+      Number.isNaN(parsedPrice) ||
+      parsedPrice < 0
+    ) {
+      res.status(400).json({
+        message: 'Field price wajib diisi berupa angka yang valid (>= 0)',
+      });
+      return;
+    }
+
+    const existing = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      res.status(404).json({
+        message: 'Produk tidak ditemukan',
+      });
+      return;
+    }
+
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data: {
+        name: name.trim(),
+        price: Math.round(parsedPrice),
+      },
+    });
+
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error('Error updateProduct:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+}
