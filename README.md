@@ -13,6 +13,12 @@ Repository untuk tugas mata kuliah Pemrograman Web:
 │   │       └── migration.sql
 │   ├── schema.prisma
 │   └── seed.ts
+├── screenshot/
+│   ├── 01-prisma-studio-migration.png
+│   ├── 02-postman-get-all-products.jpg
+│   ├── 03-postman-get-product-by-id.png
+│   ├── 04-postman-get-product-404.png
+│   └── 05-postman-post-product-201.png
 ├── src/
 │   ├── controllers/
 │   │   ├── hello.controller.ts
@@ -82,3 +88,29 @@ Repository untuk tugas mata kuliah Pemrograman Web:
 | `POST` | `/products` | Membuat produk baru | `{ "name": "Spidol", "price": 8500 }` | `201 Created` / `400` |
 | `PUT` | `/products` atau `/products/:id` | Mengupdate produk yang sudah ada | `{ "id": 3, "name": "Spidol Snowman", "price": 9500 }` | `200 OK` / `400` / `404` |
 | `DELETE` | `/products/:id` atau `/products` | Menghapus produk berdasarkan `id` | Opsional `{ "id": 3 }` jika tanpa `:id` | `200 OK` / `400` / `404` |
+
+---
+
+## Bukti Pengujian & Evidence (Screenshots)
+
+Berikut adalah dokumentasi pengujian endpoint API menggunakan Postman dan pengecekan database pada Prisma Studio:
+
+### 1. Prisma Studio & Migrasi Database
+Riwayat migrasi yang tercatat pada tabel `_prisma_migrations` (`20261105153250_init_product`):
+![Prisma Studio Migration](screenshot/01-prisma-studio-migration.png)
+
+### 2. GET /products (Menampilkan Seluruh Data Produk - 200 OK)
+Menampilkan seluruh data produk yang tersimpan di database (`Buku` & `Pulpen`):
+![GET All Products](screenshot/02-postman-get-all-products.jpg)
+
+### 3. GET /products/:id (Menampilkan Detail Produk Berdasarkan ID - 200 OK)
+Menampilkan satu produk dengan ID 1 (`Buku`):
+![GET Product By ID](screenshot/03-postman-get-product-by-id.png)
+
+### 4. GET /products/:id (Error Handling 404 Not Found)
+Respon ketika ID produk tidak ditemukan di database (`/products/123`):
+![GET Product 404 Not Found](screenshot/04-postman-get-product-404.png)
+
+### 5. POST /products (Menambahkan Produk Baru - 201 Created)
+Menambahkan produk baru bernama `"Spidol"` dengan harga `8500`:
+![POST Product 201 Created](screenshot/05-postman-post-product-201.png)
