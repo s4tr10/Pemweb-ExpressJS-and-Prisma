@@ -1,60 +1,179 @@
 import type { Request, Response } from 'express';
+import prisma from '../lib/prisma.js';
 
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
+export async function getProducts(_req: Request, res: Response) {
+  try {
+    const products = await prisma.product.findMany({
+      orderBy: { id: 'asc' },
+    });
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Error getProducts:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
 }
 
-const products: Product[] = [
-  { id: 1, name: 'Buku', price: 15000 },
-  { id: 2, name: 'Pulpen', price: 5000 },
-];
+export async function getProductById(req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id) || !Number.isInteger(id) || id <= 0) {
+      res.status(400).json({
+        message: 'Parameter id harus berupa angka bulat positif',
+      });
+      return;
+    }
 
-let nextId = 3;
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
 
-export function getProducts(_req: Request, res: Response) {
-  res.status(200).json(products);
+    if (!product) {
+      res.status(404).json({
+        message: 'Produk tidak ditemukan',
+      });
+      return;
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    console.error('Error getProductById:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
 }
 
-export function getProductById(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  const product = products.find((item) => item.id === id);
+export async function createProduct(req: Request, res: Response) {
+  try {
+    const { name, price } = req.body ?? {};
 
-  if (!product) {
-    res.status(404).json({
-      message: 'Produk tidak ditemukan',
+    if (typeof name !== 'string' || name.trim() === '') {
+      res.status(400).json({
+        message: 'Field name wajib diisi berupa string',
+      });
+      return;
+    }
+
+    const parsedPrice = Number(price);
+    if (
+      price === undefined ||
+      price === null ||
+      price === '' ||
+      Number.isNaN(parsedPrice) ||
+      parsedPrice < 0
+    ) {
+      res.status(400).json({
+        message: 'Field price wajib diisi berupa angka yang valid (>= 0)',
+      });
+      return;
+    }
+
+    const product = await prisma.product.create({
+      data: {
+        name: name.trim(),
+        price: Math.round(parsedPrice),
+      },
     });
-    return;
-  }
 
-  res.status(200).json(product);
+    res.status(201).json(product);
+  } catch (error) {
+    console.error('Error createProduct:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
 }
 
-export function createProduct(req: Request, res: Response) {
-  const { name, price } = req.body;
+export async function updateProduct(req: Request, res: Response) {
+  try {
+    const rawId = req.body?.id ?? req.params.id;
+    const id = Number(rawId);
 
-  if (typeof name !== 'string' || name.trim() === '') {
-    res.status(400).json({
-      message: 'Field name wajib diisi berupa string',
+    if (rawId === undefined || rawId === null || rawId === '' || Number.isNaN(id) || !Number.isInteger(id) || id <= 0) {
+      res.status(400).json({
+        message: 'Field id wajib diisi berupa angka bulat positif',
+      });
+      return;
+    }
+
+    const { name, price } = req.body ?? {};
+
+    if (typeof name !== 'string' || name.trim() === '') {
+      res.status(400).json({
+        message: 'Field name wajib diisi berupa string',
+      });
+      return;
+    }
+
+    const parsedPrice = Number(price);
+    if (
+      price === undefined ||
+      price === null ||
+      price === '' ||
+      Number.isNaN(parsedPrice) ||
+      parsedPrice < 0
+    ) {
+      res.status(400).json({
+        message: 'Field price wajib diisi berupa angka yang valid (>= 0)',
+      });
+      return;
+    }
+
+    const existing = await prisma.product.findUnique({
+      where: { id },
     });
-    return;
-  }
 
-  const parsedPrice = Number(price);
-  if (price === undefined || price === null || Number.isNaN(parsedPrice) || parsedPrice < 0) {
-    res.status(400).json({
-      message: 'Field price wajib diisi berupa angka yang valid',
+    if (!existing) {
+      res.status(404).json({
+        message: 'Produk tidak ditemukan',
+      });
+      return;
+    }
+
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data: {
+        name: name.trim(),
+        price: Math.round(parsedPrice),
+      },
     });
-    return;
+
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    console.error('Error updateProduct:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
+}
 
-  const product: Product = {
-    id: nextId++,
-    name: name.trim(),
-    price: parsedPrice,
-  };
+export async function deleteProduct(req: Request, res: Response) {
+  try {
+    const rawId = req.params.id ?? req.body?.id;
+    const id = Number(rawId);
 
-  products.push(product);
-  res.status(201).json(product);
+    if (rawId === undefined || rawId === null || rawId === '' || Number.isNaN(id) || !Number.isInteger(id) || id <= 0) {
+      res.status(400).json({
+        message: 'Parameter atau field id wajib diisi berupa angka bulat positif',
+      });
+      return;
+    }
+
+    const existing = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      res.status(404).json({
+        message: 'Produk tidak ditemukan',
+      });
+      return;
+    }
+
+    const deletedProduct = await prisma.product.delete({
+      where: { id },
+    });
+
+    res.status(200).json({
+      message: 'Produk berhasil dihapus',
+      data: deletedProduct,
+    });
+  } catch (error) {
+    console.error('Error deleteProduct:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
 }

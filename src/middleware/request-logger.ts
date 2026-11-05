@@ -5,3 +5,4 @@ export function requestLogger(req: Request, _res: Response, next: NextFunction) 
   console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
   next();
 }
+
