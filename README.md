@@ -18,7 +18,10 @@ Repository untuk tugas mata kuliah Pemrograman Web:
 │   ├── 02-postman-get-all-products.jpg
 │   ├── 03-postman-get-product-by-id.png
 │   ├── 04-postman-get-product-404.png
-│   └── 05-postman-post-product-201.png
+│   ├── 05-postman-post-product-201.png
+│   ├── 06-postman-post-validation-error-400.png
+│   ├── 07-postman-put-product-200.png
+│   └── 08-postman-delete-product-200.jpg
 ├── src/
 │   ├── controllers/
 │   │   ├── hello.controller.ts
@@ -86,14 +89,14 @@ Repository untuk tugas mata kuliah Pemrograman Web:
 | `GET` | `/products` | Menampilkan seluruh data produk | - | `200 OK` |
 | `GET` | `/products/:id` | Menampilkan satu produk berdasarkan `id` | - | `200 OK` / `400` / `404` |
 | `POST` | `/products` | Membuat produk baru | `{ "name": "Spidol", "price": 8500 }` | `201 Created` / `400` |
-| `PUT` | `/products` atau `/products/:id` | Mengupdate produk yang sudah ada | `{ "id": 3, "name": "Spidol Snowman", "price": 9500 }` | `200 OK` / `400` / `404` |
-| `DELETE` | `/products/:id` atau `/products` | Menghapus produk berdasarkan `id` | Opsional `{ "id": 3 }` jika tanpa `:id` | `200 OK` / `400` / `404` |
+| `PUT` | `/products` atau `/products/:id` | Mengupdate produk yang sudah ada | `{ "id": 1, "name": "Buku Tulis Sinar Dunia", "price": 18000 }` | `200 OK` / `400` / `404` |
+| `DELETE` | `/products/:id` atau `/products` | Menghapus produk berdasarkan `id` | Opsional `{ "id": 4 }` jika tanpa `:id` | `200 OK` / `400` / `404` |
 
 ---
 
 ## Bukti Pengujian & Evidence (Screenshots)
 
-Berikut adalah dokumentasi pengujian endpoint API menggunakan Postman dan pengecekan database pada Prisma Studio:
+Berikut adalah dokumentasi pengujian seluruh skenario endpoint API menggunakan Postman dan pengecekan database pada Prisma Studio:
 
 ### 1. Prisma Studio & Migrasi Database
 Riwayat migrasi yang tercatat pada tabel `_prisma_migrations` (`20261105153250_init_product`):
@@ -114,3 +117,15 @@ Respon ketika ID produk tidak ditemukan di database (`/products/123`):
 ### 5. POST /products (Menambahkan Produk Baru - 201 Created)
 Menambahkan produk baru bernama `"Spidol"` dengan harga `8500`:
 ![POST Product 201 Created](screenshot/05-postman-post-product-201.png)
+
+### 6. POST /products (Validasi Gagal - 400 Bad Request)
+Respon validasi saat field `name` kosong dan `price` tidak valid:
+![POST Validation Error 400](screenshot/06-postman-post-validation-error-400.png)
+
+### 7. PUT /products (Mengupdate Produk yang Sudah Ada - 200 OK)
+Mengupdate data produk ID 1 menjadi `"Buku Tulis Sinar Dunia"` dan harga `18000`:
+![PUT Product 200 OK](screenshot/07-postman-put-product-200.png)
+
+### 8. DELETE /products/:id (Menghapus Data Produk - 200 OK)
+Menghapus data produk berdasarkan ID (`/products/4`):
+![DELETE Product 200 OK](screenshot/08-postman-delete-product-200.jpg)
