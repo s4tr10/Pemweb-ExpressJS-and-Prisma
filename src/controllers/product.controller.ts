@@ -140,3 +140,40 @@ export async function updateProduct(req: Request, res: Response) {
     res.status(500).json({ message: 'Terjadi kesalahan pada server' });
   }
 }
+
+export async function deleteProduct(req: Request, res: Response) {
+  try {
+    const rawId = req.params.id ?? req.body?.id;
+    const id = Number(rawId);
+
+    if (rawId === undefined || rawId === null || rawId === '' || Number.isNaN(id) || !Number.isInteger(id) || id <= 0) {
+      res.status(400).json({
+        message: 'Parameter atau field id wajib diisi berupa angka bulat positif',
+      });
+      return;
+    }
+
+    const existing = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (!existing) {
+      res.status(404).json({
+        message: 'Produk tidak ditemukan',
+      });
+      return;
+    }
+
+    const deletedProduct = await prisma.product.delete({
+      where: { id },
+    });
+
+    res.status(200).json({
+      message: 'Produk berhasil dihapus',
+      data: deletedProduct,
+    });
+  } catch (error) {
+    console.error('Error deleteProduct:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+  }
+}
