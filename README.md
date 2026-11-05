@@ -50,7 +50,7 @@ Repository untuk tugas mata kuliah Pemrograman Web:
      ```
      Lalu pastikan `.env` berisi:
      ```env
-     DATABASE_URL="postgres://postgres:postgres@localhost:51214/template1?sslmode=disable"
+     DATABASE_URL="postgres://postgres:postgres@localhost:51214/template1?sslmode=disable&max=1&fetch_types=false"
      PORT=3000
      ```
 
