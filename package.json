@@ -1,0 +1,29 @@
+{
+  "name": "pemweb-expressjs-and-prisma",
+  "version": "1.0.0",
+  "description": "Tugas Pemrograman Web Week 9 (ExpressJS) & Week 10 (PostgreSQL & Prisma)",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "Satrio Utomo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
